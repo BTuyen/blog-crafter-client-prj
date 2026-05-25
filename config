@@ -5,6 +5,10 @@
 	ignorecase = true
 	precomposeunicode = true
 [remote "origin"]
+<<<<<<< HEAD
+	url = https://gitlab.com/hathibichtuyen20082001/booking_spa_be.git
+=======
 	url = https://gitlab.com/hathibichtuyen20082001/blog-crafter-client-prj.git
+>>>>>>> f759fdca79a25851dc2b68fbcbf6a2d0b8ef520f
 	fetch = +refs/*:refs/*
 	mirror = true
