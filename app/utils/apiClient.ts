@@ -1,9 +1,8 @@
 import axios from "axios";
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "https://blog-crafter.onrender.com";
+import envConfig from "@/app/config";
 
 const apiClient = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: envConfig.NEXT_PUBLIC_API_BASE_URL,
   headers: {
     "Content-Type": "application/json",
   },

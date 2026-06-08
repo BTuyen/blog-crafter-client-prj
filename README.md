@@ -45,7 +45,7 @@
 |---|---|
 | Node.js | >= 18.18 |
 | npm | >= 9 |
-| Backend API | Một instance Blog Crafter API đang chạy (mặc định trỏ tới `https://blog-crafter.onrender.com`) |
+| Backend API | Một instance Blog Crafter API đang chạy (ví dụ `https://blog-crafter-backend.vercel.app`) |
 
 ### Cài đặt
 
@@ -78,7 +78,7 @@ Biến môi trường được kiểm tra bằng Zod trong `app/config.ts`; nế
 
 | Biến | Bắt buộc | Mặc định | Mô tả |
 |---|---|---|---|
-| `NEXT_PUBLIC_API_BASE_URL` | ✅ Có | `https://blog-crafter.onrender.com` *(fallback trong `apiClient`)* | URL gốc của Blog Crafter backend API |
+| `NEXT_PUBLIC_API_BASE_URL` | ✅ Có | — | URL gốc của Blog Crafter backend API |
 
 ### Ví dụ `.env.local`
 
