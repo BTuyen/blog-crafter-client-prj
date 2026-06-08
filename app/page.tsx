@@ -1,4 +1,4 @@
-import BlogList from "@/app/blogs/index/page";
+import BlogList from "@/app/blogs/components/BlogList";
 import LeftSideBar from "@/components/layout/LeftSideBar";
 import SideBar from "@/components/layout/SideBar";
 

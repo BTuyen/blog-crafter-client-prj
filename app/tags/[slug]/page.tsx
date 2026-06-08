@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { IFTag } from "@/app/interfaces/tag";
 import { followTag, getTagDetail } from "@/app/api/tagApi";
 import { Button } from "@/components/ui/button";
-import BlogList from "@/app/blogs/index/page";
+import BlogList from "@/app/blogs/components/BlogList";
 import { withAuthAction } from "../../hoc/withAuth";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTagStore } from "@/app/stores/useTagStore"; // Import Zustand store
