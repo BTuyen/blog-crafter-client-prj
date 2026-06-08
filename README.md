@@ -1,180 +1,153 @@
-# 💆 Booking Spa Backend
+# 📝 Blog Crafter Client
 
-Hệ thống backend quản lý đặt lịch dịch vụ spa, xây dựng bằng **NestJS** + **Prisma** + **PostgreSQL**.
+> Giao diện web (frontend) cho nền tảng blog Blog Crafter — viết, đọc, gắn tag, thả reaction và bình luận bài viết. Xây dựng bằng **Next.js 15 (App Router)** + **React 19** + **TypeScript**.
+
+![Next.js](https://img.shields.io/badge/Next.js-15-black) ![React](https://img.shields.io/badge/React-19-blue) ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue) ![Tailwind](https://img.shields.io/badge/TailwindCSS-3.4-38bdf8)
+
+---
+
+## ✨ Tính năng
+
+- **Xác thực JWT**: đăng ký / đăng nhập, tự động làm mới access token bằng refresh token.
+- **Bảo vệ route**: middleware chặn truy cập `/profile`, `/blogs/new`, `/blogs/edit` khi chưa đăng nhập.
+- **Quản lý bài viết**: danh sách bài viết với *infinite scroll*, xem chi tiết theo slug, tạo bài mới bằng trình soạn thảo Markdown (SimpleMDE).
+- **Tag**: xem theo tag, theo dõi / bỏ theo dõi tag.
+- **Tương tác**: thả reaction và bình luận trên từng bài viết.
+- **Upload ảnh**: tải ảnh lên qua ImageKit (`ik.imagekit.io`).
+- **Tìm kiếm**: gợi ý tìm kiếm bài viết.
+- **Hồ sơ người dùng**: xem và cập nhật thông tin cá nhân (tên, avatar).
 
 ---
 
 ## 🛠️ Công nghệ sử dụng
 
-| Công nghệ | Phiên bản | Mô tả |
-|---|---|---|
-| [NestJS](https://nestjs.com/) | ^10.0.0 | Framework Node.js |
-| [TypeScript](https://www.typescriptlang.org/) | 5.3.3 | Ngôn ngữ lập trình |
-| [Prisma](https://www.prisma.io/) | ^5.22.0 | ORM kết nối database |
-| [PostgreSQL](https://www.postgresql.org/) | — | Cơ sở dữ liệu quan hệ |
-| [class-validator](https://github.com/typestack/class-validator) | ^0.15.1 | Validation DTO |
+| Nhóm | Thư viện |
+|---|---|
+| Framework | Next.js 15 (App Router, Turbopack), React 19 |
+| Ngôn ngữ | TypeScript 5 |
+| Styling | Tailwind CSS 3.4, `tailwindcss-animate`, `class-variance-authority` |
+| UI components | shadcn/ui trên nền Radix UI, `lucide-react` (icon) |
+| State management | Zustand 5 |
+| HTTP client | Axios |
+| Form & validation | react-hook-form, Zod |
+| Markdown | SimpleMDE (`react-simplemde-editor`), `react-markdown`, `markdown-it`, `showdown` |
+| Auth | `js-cookie`, `jwt-decode` (JWT lưu ở cookie) |
+| Thông báo | `sonner` (toast) |
+| Tiện ích | `date-fns`, `lodash` |
+
+---
+
+## 🚀 Khởi động nhanh
+
+### Yêu cầu
+
+| Công cụ | Phiên bản |
+|---|---|
+| Node.js | >= 18.18 |
+| npm | >= 9 |
+| Backend API | Một instance Blog Crafter API đang chạy (mặc định trỏ tới `https://blog-crafter.onrender.com`) |
+
+### Cài đặt
+
+```bash
+# 1. Clone repository
+git clone https://github.com/BTuyen/blog-crafter-client-prj.git
+cd blog-crafter-client-prj
+
+# 2. Cài dependencies
+npm install
+
+# 3. Tạo file biến môi trường
+cp .env.example .env.local
+```
+
+### Chạy dự án
+
+```bash
+npm run dev      # Development server (Turbopack) tại http://localhost:3000
+npm run build    # Build production
+npm run start    # Chạy bản production sau khi build
+npm run lint     # Kiểm tra ESLint
+```
+
+---
+
+## ⚙️ Biến môi trường
+
+Biến môi trường được kiểm tra bằng Zod trong `app/config.ts`; nếu thiếu, app sẽ **throw lỗi khi khởi động**.
+
+| Biến | Bắt buộc | Mặc định | Mô tả |
+|---|---|---|---|
+| `NEXT_PUBLIC_API_BASE_URL` | ✅ Có | `https://blog-crafter.onrender.com` *(fallback trong `apiClient`)* | URL gốc của Blog Crafter backend API |
+
+### Ví dụ `.env.local`
+
+```env
+# URL của backend API
+NEXT_PUBLIC_API_BASE_URL=http://localhost:8080
+```
+
+> ⚠️ Biến có tiền tố `NEXT_PUBLIC_` được nhúng vào bundle phía client — không đặt secret ở đây.
 
 ---
 
 ## 📁 Cấu trúc thư mục
 
 ```
-booking_spa_be/
-├── prisma/
-│   ├── schema.prisma          # Định nghĩa schema database
-│   └── migrations/            # Lịch sử migration
-├── src/
-│   ├── auth/                  # Module xác thực
-│   ├── bookings/              # Module đặt lịch
-│   ├── services/              # Module dịch vụ spa
-│   ├── staff/                 # Module nhân viên
-│   ├── users/                 # Module người dùng
-│   │   └── dto/               # Data Transfer Objects
-│   ├── prisma/                # Module kết nối Prisma
-│   ├── app.module.ts
-│   └── main.ts
-├── test/                      # E2E tests
-├── package.json
-└── tsconfig.json
+.
+├── app/                      # Next.js App Router
+│   ├── api/                  # Lớp gọi API (axios): auth, blog, comment, tag, user, media
+│   ├── auth/                 # Trang đăng nhập / đăng ký
+│   ├── blogs/                # Danh sách, chi tiết ([slug]), tạo bài mới (new)
+│   ├── tags/                 # Trang tag và tag theo slug
+│   ├── (user)/               # Hồ sơ người dùng (route group)
+│   ├── stores/               # Zustand stores (user, blog, tag, comment, reaction, search)
+│   ├── interfaces/           # TypeScript types (blog, user, comment, tag, ...)
+│   ├── hooks/                # Custom hooks (infinite scroll, user interactions)
+│   ├── utils/                # apiClient, tokenStorage, handleAsyncContext
+│   ├── config.ts             # Validate biến môi trường bằng Zod
+│   └── layout.tsx
+├── components/
+│   ├── ui/                   # Component shadcn/ui (button, input, dialog, ...)
+│   └── layout/               # Header, Sidebar, MainLayoutWrapper, ...
+├── lib/                      # Tiện ích dùng chung (errorHandler, toast, utils)
+├── schemaValidations/        # Zod schema (auth.schema.ts)
+├── middleware.ts             # Bảo vệ route theo trạng thái đăng nhập
+└── next.config.ts
 ```
 
 ---
 
-## 🗄️ Database Schema
+## 🔐 Cơ chế xác thực
 
-```
-User ──< Booking >── Service ──< Spa
-                        |
-                     Payment
-```
-
-### Các bảng chính
-
-| Bảng | Mô tả |
-|---|---|
-| `users` | Người dùng (khách hàng, nhân viên, admin) |
-| `spas` | Thông tin cơ sở spa |
-| `services` | Dịch vụ của từng spa |
-| `bookings` | Lịch đặt của khách hàng |
-| `payments` | Thanh toán cho mỗi booking |
-
-### Enums
-
-- **UserRole**: `customer` · `staff` · `admin`
-- **BookingStatus**: `pending` · `confirmed` · `completed` · `cancelled`
-- **PaymentStatus**: `pending` · `success` · `failed`
-- **PaymentMethod**: `VNPay` · `Momo`
+1. Đăng nhập / đăng ký gọi `POST /auth/sign-in` · `POST /auth/sign-up`, nhận về `accessToken` và `refreshToken`.
+2. Token được lưu ở cookie (`app/utils/tokenStorage.ts`).
+3. Mọi request cần quyền đi qua `authorizedApiClient` (gắn header `Authorization: Bearer <token>`).
+4. Khi nhận `401`, một response interceptor (đăng ký **một lần** ở module-level) tự gọi `POST /auth/refresh-token` để lấy access token mới rồi thử lại request gốc.
+5. `middleware.ts` chuyển hướng người dùng chưa đăng nhập về `/auth?mode=login` khi vào route private.
 
 ---
 
-## 🚀 Khởi động dự án
+## 🔌 API tiêu thụ
 
-### Yêu cầu
+**Base URL:** lấy từ `NEXT_PUBLIC_API_BASE_URL`. Các route private yêu cầu header `Authorization: Bearer <token>`.
 
-- Node.js >= 18
-- PostgreSQL đang chạy
-- npm hoặc yarn
-
-### Cài đặt
-
-```bash
-# 1. Clone repository
-git clone https://gitlab.com/hathibichtuyen20082001/booking_spa_be.git
-cd booking_spa_be
-
-# 2. Cài đặt dependencies
-npm install
-
-# 3. Tạo file .env
-cp .env.example .env
-```
-
-### Cấu hình môi trường
-
-Tạo file `.env` ở thư mục gốc với nội dung:
-
-```env
-DATABASE_URL="postgresql://USER:PASSWORD@localhost:5432/booking_spa_db"
-PORT=3000
-```
-
-> Thay `USER`, `PASSWORD` bằng thông tin PostgreSQL của bạn.
-
-### Khởi tạo database
-
-```bash
-# Chạy migration để tạo các bảng
-npx prisma migrate dev
-
-# (Tuỳ chọn) Mở Prisma Studio để xem dữ liệu
-npx prisma studio
-```
-
-### Chạy server
-
-```bash
-# Development (hot-reload)
-npm run start:dev
-
-# Production
-npm run build
-npm run start:prod
-```
-
-Server sẽ chạy tại: `http://localhost:3000`
-
----
-
-## 📡 API Endpoints
-
-### Users
-
-| Method | Endpoint | Mô tả |
+| Nhóm | Endpoint | Mô tả |
 |---|---|---|
-| `GET` | `/users` | Lấy danh sách tất cả người dùng |
-| `POST` | `/users` | Tạo người dùng mới |
+| Auth | `POST /auth/sign-up`, `POST /auth/sign-in`, `POST /auth/refresh-token` | Đăng ký, đăng nhập, làm mới token |
+| Blogs | `GET /blogs`, `GET /blogs/{id}`, `GET /blogs/user/{id}`, `POST /blogs/create`, `POST /blogs/react/{id}` | Danh sách, chi tiết, bài của user, tạo bài, thả reaction |
+| Comments | `GET /comments/{id}`, `POST /comments/create` | Lấy và tạo bình luận |
+| Tags | `GET /tags`, `GET /tags/{id}`, `GET /tags/followed`, `POST /tags/create`, `POST /tags/follow/{id}`, `POST /tags/unfollow/{id}` | Quản lý và theo dõi tag |
+| Users | `GET /users/{id}`, cập nhật user theo `{id}` | Thông tin và cập nhật hồ sơ |
+| Media | `POST /media/upload`, `POST /media/remove` | Upload / xoá ảnh (ImageKit) |
 
-**Body tạo user (`POST /users`)**:
-```json
-{
-  "full_name": "Nguyễn Văn A",
-  "email": "example@email.com",
-  "password": "123456",
-  "role": "customer"
-}
-```
-
-> ⚠️ Các module `auth`, `bookings`, `services`, `staff` đang được phát triển.
+> Đây là các endpoint **client gọi tới**; hợp đồng chính thức do backend Blog Crafter định nghĩa.
 
 ---
 
-## 🧪 Testing
+## 🤝 Đóng góp
 
-```bash
-# Unit tests
-npm run test
-
-# E2E tests
-npm run test:e2e
-
-# Test coverage
-npm run test:cov
-```
-
----
-
-## 📝 Scripts
-
-| Script | Mô tả |
-|---|---|
-| `npm run start:dev` | Chạy development server (watch mode) |
-| `npm run start:prod` | Chạy production server |
-| `npm run build` | Build project |
-| `npm run lint` | Kiểm tra và sửa lỗi ESLint |
-| `npm run format` | Format code với Prettier |
-
----
-
-## 🌐 Liên kết
-
-- **GitLab**: [hathibichtuyen20082001/booking_spa_be](https://gitlab.com/hathibichtuyen20082001/booking_spa_be)
+1. Fork repository.
+2. Tạo nhánh tính năng: `git checkout -b feature/ten-tinh-nang`
+3. Commit theo Conventional Commits: `git commit -m 'feat: thêm tính năng X'`
+4. Push và mở Pull Request.
