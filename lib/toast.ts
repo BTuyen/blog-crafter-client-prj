@@ -1,6 +1,6 @@
 import { toast } from "sonner";
 
-export const showToast = (type: "success" | "error", message: string) => {
+export const showToast = (type: "success" | "error" | "warning", message: string) => {
   if (type === "success") {
     toast.success(message, { richColors: true });
   } else if (type === "warning") {

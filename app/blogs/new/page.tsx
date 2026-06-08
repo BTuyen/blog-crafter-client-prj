@@ -40,7 +40,7 @@ export default function FormBlog() {
     return await Promise.all(
       tags.map(async (tag) => {
         if (!tag.isNew) return tag.id;
-        const {data, error} = await createTag(
+        const { data } = await createTag(
           tag.name,
           tag.description || tag.name
         );
@@ -67,7 +67,7 @@ export default function FormBlog() {
       submitData.append("image", formData.imageFile);
     }
 
-    const { data, error } = await createBlog(submitData);
+    const { error } = await createBlog(submitData);
     if (!error) {
       router.push("/");
     }
