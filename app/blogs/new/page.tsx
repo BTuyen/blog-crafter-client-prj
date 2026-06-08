@@ -7,9 +7,15 @@ import TagInput from "@/app/blogs/new/components/TagInput";
 import ImageInput from "@/app/blogs/new/components/ImageInput";
 import { createBlog } from "@/app/api/blogApi";
 import { createTag } from "@/app/api/tagApi";
-import SimpleMDE from "react-simplemde-editor";
+import dynamic from "next/dynamic";
 import "easymde/dist/easymde.min.css";
 import { useRouter } from "next/navigation";
+
+// SimpleMDE truy cập `document` khi import → chỉ load phía client, tránh
+// lỗi "document is not defined" khi Next prerender trang ở build time.
+const SimpleMDE = dynamic(() => import("react-simplemde-editor"), {
+  ssr: false,
+});
 
 type TFormData = {
   imageFile: File | null;
