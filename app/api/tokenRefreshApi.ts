@@ -13,8 +13,12 @@ export const refreshAccessToken = async (): Promise<string | null> => {
   try {
     const response = await apiClient.post("/auth/refresh-token", { refreshToken });
 
-    if (response.data?.accessToken) {
-      const newAccessToken = response.data.accessToken;
+    // Backend bọc payload trong envelope { data: {...} } (xem authApi/authorizedApiClient).
+    // Fallback về response.data phòng trường hợp trả phẳng.
+    const payload = response.data?.data ?? response.data;
+    const newAccessToken = payload?.accessToken;
+
+    if (newAccessToken) {
       setAccessToken(newAccessToken);
       return newAccessToken;
     } else {

@@ -8,6 +8,48 @@ interface CustomAxiosRequestConfig extends AxiosRequestConfig {
   _retry?: boolean;
 }
 
+// Đăng ký interceptor MỘT LẦN ở module-level, không phải mỗi lần gọi factory.
+let interceptorRegistered = false;
+
+const registerAuthInterceptor = () => {
+  if (interceptorRegistered) return;
+  interceptorRegistered = true;
+
+  apiClient.interceptors.response.use(
+    (response: AxiosResponse) => response,
+    async (error: AxiosError) => {
+      const originalRequest = error.config as CustomAxiosRequestConfig | undefined;
+      const isRefreshCall = originalRequest?.url?.includes("/auth/refresh-token");
+
+      if (
+        originalRequest &&
+        error.response?.status === 401 &&
+        !originalRequest._retry &&
+        !isRefreshCall
+      ) {
+        originalRequest._retry = true;
+
+        const newAccessToken = await refreshAccessToken();
+
+        if (newAccessToken) {
+          setAccessToken(newAccessToken);
+          if (!originalRequest.headers) {
+            originalRequest.headers = {};
+          }
+          originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
+          return apiClient(originalRequest);
+        }
+
+        showToast("error", "Unauthorized: Token refresh failed");
+      }
+
+      return Promise.reject(error);
+    }
+  );
+};
+
+registerAuthInterceptor();
+
 const authorizedApiClient = () => {
   const token = getAccessToken();
 
@@ -22,33 +64,6 @@ const authorizedApiClient = () => {
       refreshToken: async () => null
     };
   }
-
-  apiClient.interceptors.response.use(
-    (response: AxiosResponse) => response,
-    async (error: AxiosError) => {
-      const originalRequest = error.config as CustomAxiosRequestConfig;
-
-      if (originalRequest && error.response?.status === 401 && !originalRequest._retry) {
-        originalRequest._retry = true;
-
-        const newAccessToken = await refreshAccessToken();
-
-        if (newAccessToken) {
-          setAccessToken(newAccessToken);
-          if (!originalRequest.headers) {
-            originalRequest.headers = {};
-          }
-          originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
-          return apiClient(originalRequest);
-        } else {
-          showToast("error", "Unauthorized: Token refresh failed");
-          return Promise.reject(error);
-        }
-      }
-
-      return Promise.reject(error);
-    }
-  );
 
   return {
     get: async (url: string, params?: Record<string, unknown>) => {
