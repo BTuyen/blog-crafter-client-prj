@@ -1,3 +1,4 @@
+"use client";
 import { toast } from "sonner";
 
 export const showToast = (type: "success" | "error" | "warning", message: string) => {

@@ -13,7 +13,7 @@ export default function SideBar() {
   }, [getListTagFollowed]);
 
   return (
-    <aside className="w-60 p-4">
+    <aside className="hidden lg:block w-60 shrink-0 p-4">
       <div className="flex flex-col space-y-2">
         <h3 className="text-lg font-semibold">My followed tags</h3>
         {loading ? (

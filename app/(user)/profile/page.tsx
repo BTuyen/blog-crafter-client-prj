@@ -2,20 +2,17 @@ import ActionItems from "@/app/(user)/ActionItems";
 import UserInfo from "@/app/(user)/UserInfo";
 import { fetchUserProfile } from "@/app/(user)/profile/hooks/useFetchUser";
 import { getAccessToken, getUserIdFromToken } from "@/app/(user)/profile/hooks/useAuth";
-import { showToast } from "@/lib/toast";
 import { redirect } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default async function ProfilePage() {
   const token = await getAccessToken();
   if (!token) {
-    showToast("error", "Unauthorized: Missing access token");
     redirect("/auth?mode=login");
   }
 
   const userId = getUserIdFromToken(token);
   if (!userId) {
-    showToast("error", "Unauthorized: Invalid user ID");
     redirect("/auth?mode=login");
   }
 

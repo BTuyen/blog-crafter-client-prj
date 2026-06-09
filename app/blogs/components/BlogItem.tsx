@@ -69,8 +69,8 @@ export default function BlogItem({ blog, displayAuthor }: TBlogItemProps) {
           </h2>
           <ListTag tags={blog.blogTags} />
           {displayAuthor && (
-            <div className="flex flex-row justify-between">
-              <div className="flex space-x-4">
+            <div className="flex flex-wrap items-center gap-2 justify-between">
+              <div className="flex flex-wrap gap-2">
                 {countReactions.reactions &&
                   typeof countReactions.reactions === "object" &&
                   Object.entries(countReactions.reactions).map(
@@ -81,18 +81,18 @@ export default function BlogItem({ blog, displayAuthor }: TBlogItemProps) {
                       return (
                         <div
                           key={reactionId}
-                          className="flex items-center space-x-2"
+                          className="flex items-center gap-1"
                         >
                           {reaction?.icon}
-                          <span className="ml-1 text-sm">{count || 0}</span>
+                          <span className="text-sm">{count || 0}</span>
                         </div>
                       );
                     }
                   )}
               </div>
-              <div className="justify-center items-center">
-                <Button variant="ghost" onClick={() => handleClick("comments")}>
-                  <MessageCircle /> {blog.comments_count} Comments
+              <div className="flex items-center">
+                <Button variant="ghost" size="sm" onClick={() => handleClick("comments")}>
+                  <MessageCircle className="w-4 h-4" /> <span className="text-sm">{blog.comments_count} Comments</span>
                 </Button>
               </div>
               <div className="flex-1 flex items-center justify-end">

@@ -10,7 +10,7 @@ const menuItems = [
 
 export default function LeftSideBar() {
   return (
-    <aside className="w-60 p-4">
+    <aside className="hidden md:block w-60 shrink-0 p-4">
       <ul className="flex flex-col space-y-2 fixed">
         {menuItems.map((item, index) => (
           <Link

@@ -4,9 +4,9 @@ import SideBar from "@/components/layout/SideBar";
 
 export default function Home() {
   return (
-    <div className="flex h-screen">
+    <div className="flex min-h-screen">
       <LeftSideBar />
-      <main className="flex-1 p-4">
+      <main className="flex-1 min-w-0 p-4">
         <BlogList />
       </main>
       <SideBar />
