@@ -48,7 +48,7 @@ const Header: React.FC = () => {
   };
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-black text-black dark:text-white py-2 px-4 flex items-center shadow-md rounded-lg">
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 flex-1">
         <Link href="/">
           <Image
             src="/favicon.ico"
@@ -60,8 +60,8 @@ const Header: React.FC = () => {
         </Link>
       </div>
 
-      <div className="absolute left-1/2 transform -translate-x-1/2 w-1/3">
-        <div className="relative">
+      <div className="flex-1 flex justify-center">
+        <div className="relative w-full max-w-sm">
           <Search className="absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-400" />
           <Input
             type="text"
@@ -73,7 +73,7 @@ const Header: React.FC = () => {
         </div>
       </div>
 
-      <div className="flex items-center gap-4 ml-auto">
+      <div className="flex items-center gap-4 flex-1 justify-end">
         <div className="flex items-center space-x-2">
           <Switch
             id="dark-mode"
