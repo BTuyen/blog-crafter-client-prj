@@ -84,7 +84,9 @@ const AuthForm = ({ mode }: TAuthFormProps) => {
                     </label>
                     <Input
                       type={
-                        field.name.includes("password") ? "password" : "email"
+                        field.name.toLowerCase().includes("password")
+                          ? "password"
+                          : "email"
                       }
                       placeholder={`Enter your ${field.name}`}
                       {...field}
