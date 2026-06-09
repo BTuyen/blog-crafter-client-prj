@@ -1,5 +1,5 @@
 async function fetchUserProfile(token: string, userId: number) {
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://blog-crafter.onrender.com';
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
 
   try {
     console.log("Fetching user profile...");
