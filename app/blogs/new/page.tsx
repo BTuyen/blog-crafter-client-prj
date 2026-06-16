@@ -6,7 +6,6 @@ import { IFTag } from "@/app/interfaces/tag";
 import TagInput from "@/app/blogs/new/components/TagInput";
 import ImageInput from "@/app/blogs/new/components/ImageInput";
 import { createBlog } from "@/app/api/blogApi";
-import { createTag } from "@/app/api/tagApi";
 import dynamic from "next/dynamic";
 import "easymde/dist/easymde.min.css";
 import { useRouter } from "next/navigation";
@@ -42,31 +41,17 @@ export default function FormBlog() {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const generateTagIds = async (tags: IFTag[]) => {
-    return await Promise.all(
-      tags.map(async (tag) => {
-        if (!tag.isNew) return tag.id;
-        const { data } = await createTag(
-          tag.name,
-          tag.description || tag.name
-        );
-        return data?.data?.id;
-      })
-    ).then((ids) => ids.filter((id) => id !== null));
-  };
-
   const handlePublish = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    const finalTags = await generateTagIds(formData.tags);
 
     const submitData = new FormData();
     submitData.append("title", formData.title);
     submitData.append("body", formData.body);
     submitData.append("status", "published");
 
-    finalTags.forEach((tagId, index) => {
-      submitData.append(`tags[${index}]`, tagId.toString());
+    // Gửi TÊN tag — backend tự chuẩn hóa, dedupe theo slug và findOrCreate.
+    formData.tags.forEach((tag, index) => {
+      submitData.append(`tags[${index}]`, tag.name);
     });
 
     if (formData.imageFile) {

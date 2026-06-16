@@ -3,6 +3,11 @@
 import React, { useState, useEffect } from "react";
 import { IFTag } from "@/app/interfaces/tag";
 import { getListTag } from "@/app/api/tagApi";
+import { normalizeTag } from "@/app/utils/normalizeTag";
+import { showToast } from "@/lib/toast";
+
+// Giới hạn số tag mỗi bài để chặn spam nhồi từ khóa (khớp với giới hạn backend).
+const MAX_TAGS = 5;
 
 type TTagInputProps = {
   tags: IFTag[];
@@ -32,12 +37,16 @@ export default function TagInput({ tags, setTags }: TTagInputProps) {
       return;
     }
 
+    const inputSlug = normalizeTag(tagInput);
+
+    // Lọc theo slug đã chuẩn hóa: "next js" cũng khớp tag "nextjs".
     const filtered = allTags.filter((tag) =>
-      tag.name.toLowerCase().includes(tagInput.toLowerCase())
+      normalizeTag(tag.name).includes(inputSlug)
     );
 
+    // Coi là đã tồn tại nếu trùng slug (không chỉ trùng chữ thường).
     const tagExists = filtered.some(
-      (tag) => tag.name.toLowerCase() === tagInput.toLowerCase()
+      (tag) => normalizeTag(tag.name) === inputSlug
     );
 
     if (tagExists) {
@@ -56,24 +65,43 @@ export default function TagInput({ tags, setTags }: TTagInputProps) {
     setShowSuggestions(true);
   }, [tagInput, allTags]);
 
-  const addTag = (newTag: IFTag) => {
-    const trimName = newTag.name.trim();
-    if (!trimName) return;
-    if (tags.some((t) => t.name.toLowerCase() === trimName.toLowerCase())) {
-      setTagInput("");
-      setSuggestions([]);
-      setShowSuggestions(false);
-      return;
-    }
-    setTags([...tags, newTag]);
+  const resetInput = () => {
     setTagInput("");
     setSuggestions([]);
     setShowSuggestions(false);
   };
 
+  const addTag = (newTag: IFTag) => {
+    const trimName = newTag.name.trim();
+    const slug = normalizeTag(trimName);
+
+    // Chặn input rác: rỗng hoặc toàn ký tự đặc biệt (slug rỗng sau chuẩn hóa).
+    if (!slug) {
+      showToast("error", "Tag không hợp lệ");
+      resetInput();
+      return;
+    }
+
+    // Đã có tag trùng slug (vd "next js" khi đã chọn "nextjs") -> bỏ qua.
+    if (tags.some((t) => normalizeTag(t.name) === slug)) {
+      resetInput();
+      return;
+    }
+
+    // Giới hạn số tag.
+    if (tags.length >= MAX_TAGS) {
+      showToast("error", `Tối đa ${MAX_TAGS} tag mỗi bài`);
+      resetInput();
+      return;
+    }
+
+    setTags([...tags, { ...newTag, name: trimName }]);
+    resetInput();
+  };
+
   const handleAddTag = (tagName: string) => {
     const foundSuggestion = suggestions.find(
-      (sug) => sug.name.toLowerCase() === tagName.toLowerCase()
+      (sug) => normalizeTag(sug.name) === normalizeTag(tagName)
     );
     const newTag: IFTag = foundSuggestion || {
       id: Date.now() + Math.floor(Math.random() * 1000),
