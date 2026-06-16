@@ -25,7 +25,7 @@ export default function SideBar() {
             {tags.map((tag) => (
               <div key={tag?.id}>
                 <Link
-                  href={`/tags/${tag?.id}`}
+                  href={`/tags/${tag?.slug ?? tag?.id}`}
                   className="text-blue-600 hover:underline block"
                 >
                   #{tag?.name}

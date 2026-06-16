@@ -3,7 +3,7 @@
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { IFTag } from "@/app/interfaces/tag";
-import { followTag, getTagDetail } from "@/app/api/tagApi";
+import { followTag, getTagDetailBySlug } from "@/app/api/tagApi";
 import { Button } from "@/components/ui/button";
 import BlogList from "@/app/blogs/components/BlogList";
 import { withAuthAction } from "../../hoc/withAuth";
@@ -15,18 +15,18 @@ export default function TagDetailPage() {
   const [loading, setLoading] = useState(true);
   const { followedTags, toggleFollowTag } = useTagStore(); // Lấy trạng thái từ store
   const params = useParams();
-  const tagId = params.slug ? Number(params.slug) : null;
+  const slug = params.slug ? String(params.slug) : null;
 
   useEffect(() => {
-    if (!tagId) return;
+    if (!slug) return;
 
     const fetchTag = async () => {
-      const { data } = await getTagDetail(tagId);
-      setTag(data?.data);
+      const { data } = await getTagDetailBySlug(slug);
+      setTag(data);
       setLoading(false);
     };
     fetchTag();
-  }, [tagId]);
+  }, [slug]);
 
   const handleFollowTag = withAuthAction(async (tagId: number) => {
     await followTag(tagId);

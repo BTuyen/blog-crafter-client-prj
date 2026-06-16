@@ -29,7 +29,7 @@ export default function TagItem({ tag }: TTagItemProps) {
   const [isFollowed, setIsFollowed] = useState(isFollowedByUser);
 
   const handleClick = () => {
-    router.push(`/tags/${tag.id}`);
+    router.push(`/tags/${tag.slug ?? tag.id}`);
   };
 
   const handleFollowTag = withAuthAction(async (tagId: number) => {

@@ -38,6 +38,19 @@ export const getTagDetail = async (id: number) => {
   return { data, error };
 };
 
+// API tag detail theo slug (public — trả về tag trực tiếp)
+export const getTagDetailBySlug = async (slug: string) => {
+  const { data, error } = await handleAsync(() =>
+    apiClient.get(`/tags/slug/${slug}`).then((res) => res.data.data)
+  );
+  if (error) {
+    showToast(
+      "error", error instanceof Error ? error.message : `Fetching tag failed!`
+    );
+  }
+  return { data, error };
+};
+
 // API follow tag
 export const followTag = async (id: number) => {
   const { data, error } = await handleAsync(() =>
