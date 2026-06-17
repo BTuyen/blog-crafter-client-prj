@@ -1,12 +1,19 @@
 import apiClient from "@/app/utils/apiClient";
 import { getRefreshToken, setAccessToken, clearTokens } from "@/app/utils/tokenStorage";
+import { useUserStore } from "@/app/stores/useUserStore";
 import { showToast } from "@/lib/toast";
+
+const clearSession = () => {
+  clearTokens();
+  useUserStore.getState().setUser(null);
+};
 
 export const refreshAccessToken = async (): Promise<string | null> => {
   const refreshToken = getRefreshToken();
 
   if (!refreshToken) {
-    showToast("error", "Không tìm thấy refresh token");
+    clearSession();
+    showToast("error", "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại");
     return null;
   }
 
@@ -22,13 +29,13 @@ export const refreshAccessToken = async (): Promise<string | null> => {
       setAccessToken(newAccessToken);
       return newAccessToken;
     } else {
-      showToast("error", "Token refresh failed");
-      clearTokens();
+      clearSession();
+      showToast("error", "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại");
       return null;
     }
   } catch {
-    showToast("error", "An error occurred while refreshing the token.");
-    clearTokens();
+    clearSession();
+    showToast("error", "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại");
     return null;
   }
 };
