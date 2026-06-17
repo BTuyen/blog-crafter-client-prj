@@ -54,13 +54,13 @@ const authorizedApiClient = () => {
   const token = getAccessToken();
 
   if (!token) {
-    showToast("error", "Unauthorized: Missing access token");
+    const unauthError = new Error("Vui lòng đăng nhập để thực hiện thao tác này");
     return {
-      get: async () => ({ data: null, error: "Unauthorized: Missing access token" }),
-      post: async () => ({ data: null, error: "Unauthorized: Missing access token" }),
-      patch: async () => ({ data: null, error: "Unauthorized: Missing access token" }),
-      delete: async () => ({ data: null, error: "Unauthorized: Missing access token" }),
-      put: async () => ({ data: null, error: "Unauthorized: Missing access token" }),
+      get: async () => { throw unauthError; },
+      post: async () => { throw unauthError; },
+      patch: async () => { throw unauthError; },
+      delete: async () => { throw unauthError; },
+      put: async () => { throw unauthError; },
       refreshToken: async () => null
     };
   }

@@ -12,8 +12,12 @@ export const refreshAccessToken = async (): Promise<string | null> => {
   const refreshToken = getRefreshToken();
 
   if (!refreshToken) {
-    clearSession();
-    showToast("error", "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại");
+    // Không show toast nếu user chưa từng login (không có user trong store)
+    const wasLoggedIn = !!useUserStore.getState().user;
+    if (wasLoggedIn) {
+      clearSession();
+      showToast("error", "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại");
+    }
     return null;
   }
 
