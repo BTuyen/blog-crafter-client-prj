@@ -1,6 +1,7 @@
 import {create} from 'zustand';
 import {getListTagFollowed} from '@/app/api/tagApi';
 import { IFTag } from "@/app/interfaces/tag";
+import { getAccessToken } from '@/app/utils/tokenStorage';
 
 interface TagStore {
   tags: IFTag[];
@@ -19,6 +20,13 @@ export const useTagStore = create<TagStore>((set) => ({
   setTags: (tags) => set({tags}),
   setLoading: (loading) => set({loading}),
   getListTagFollowed: async () => {
+    // Followed tags is a protected endpoint. Skip the call entirely when the
+    // user isn't logged in so we don't spam the console with auth errors on
+    // every anonymous page load.
+    if (!getAccessToken()) {
+      set({tags: [], loading: false});
+      return;
+    }
     try {
       set({loading: true});
       const {data, error} = await getListTagFollowed();
